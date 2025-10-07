@@ -16,6 +16,21 @@ for branch in "${branches[@]}"; do
     if [[ $MINOR_RELEASE_BRANCH == $CURRENT_BRANCH ]]; then
 
         echo "Current branch: $CURRENT_BRANCH is lower than branch: $branch. $CURRENT_BRANCH will be synched with $branch"
+
+        # Update Development
+        git fetch origin "$branch"
+        git checkout "$branch"
+        git pull origin "$branch"
+
+        # Fetch the source branch (Hotfix branch)
+        git fetch origin "$MINOR_RELEASE_BRANCH"
+
+        # Check if latest commit comes from source branch
+        if git merge-base --is-ancestor "origin/$MINOR_RELEASE_BRANCH" "$branch"; then
+            echo "Changes from $MINOR_RELEASE_BRANCH are already in $branch"
+        else
+            echo "Changes from $MINOR_RELEASE_BRANCH are NOT yet in $branch"
+        fi
     fi
 
 done
