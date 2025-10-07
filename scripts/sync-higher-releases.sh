@@ -17,7 +17,7 @@ for branch in "${branches[@]}"; do
     #     echo "Branch of this loop is the same as my current branch. Skipping..."
     #     continue
     # fi
-    if [[ $MINOR_RELEASE_BRANCH == $CURRENT_BRANCH ]]; then
+    if [[ $MINOR_RELEASE_BRANCH == $CURRENT_BRANCH && $CURRENT_BRANCH != $branch ]]; then
 
         echo "Current branch: $CURRENT_BRANCH is lower than branch: $branch. $CURRENT_BRANCH will be synched with $branch"
 
@@ -34,6 +34,16 @@ for branch in "${branches[@]}"; do
             echo "Changes from $MINOR_RELEASE_BRANCH are already in $branch"
         else
             echo "Changes from $MINOR_RELEASE_BRANCH are NOT yet in $branch"
+            if git merge "origin/$MINOR_RELEASE_BRANCH" --no-ff -m "merging $MINOR_RELEASE_BRANCH to $branch"; then
+                echo "Merge successful, pushing changes..."
+                git push origin $branch
+                echo "=== Synchronization completed successfully ==="
+            else
+                echo "Error: Merge failed. Possible conflicts detected."
+                echo "Repository status:"
+                git status
+                exit 1
+            fi
         fi
     fi
     git checkout "$CURRENT_BRANCH"
