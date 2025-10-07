@@ -36,6 +36,7 @@ for branch in "${branches[@]}"; do
             echo "Changes from $MINOR_RELEASE_BRANCH are NOT yet in $branch"
         fi
     fi
+    git checkout "$CURRENT_BRANCH"
 
 done
 
